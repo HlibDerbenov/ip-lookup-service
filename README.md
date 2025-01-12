@@ -190,15 +190,22 @@ ip-lookup-service/
 │   │   ├── lookup.service.ts
 │   │   ├── lookup.entity.ts
 │   │   ├── dto/
+│   │   │   ├── create-lookup.dto.ts
 │   ├── cache/
 │   │   ├── cache.module.ts
 │   │   ├── cache.service.ts
 │   ├── database/
 │   │   ├── database.module.ts
+│   ├── config/
+│   │   ├── env.validation.ts
 ├── test/
 │   ├── e2e/
+│   │   ├── lookup.e2e-spec.ts
 │   ├── lookup/
+│   │   ├── lookup.controller.spec.ts
+│   │   ├── lookup.service.spec.ts
 ├── docker-compose.yml
+├── Dockerfile
 ├── .github/workflows/ci.yml
 ├── package.json
 ├── tsconfig.json
