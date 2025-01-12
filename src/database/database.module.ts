@@ -1,18 +1,22 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Lookup } from '../lookup/lookup.entity';
 import { DatabaseService } from './database.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.MONGODB_URI || 'mongodb://localhost:27017/ip-lookup',
-      database: 'ip-lookup',
-      entities: [Lookup],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const uri = configService.get<string>('MONGODB_URI');
+        const database = configService.get<string>('MONGODB_DATABASE');
+        return {
+          type: 'mongodb',
+          url: `${uri}/${database}`,
+          entities: [__dirname + '/../**/*.entity.{ts,js}'],
+        };
+      },
     }),
-    TypeOrmModule.forFeature([Lookup]),
   ],
   providers: [DatabaseService],
   exports: [TypeOrmModule],

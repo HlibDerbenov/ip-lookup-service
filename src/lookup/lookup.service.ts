@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Lookup } from './lookup.entity';
 import axios from 'axios';
 import { CacheService } from '../cache/cache.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class LookupService {
@@ -11,6 +12,7 @@ export class LookupService {
     @InjectRepository(Lookup)
     private readonly lookupRepository: Repository<Lookup>,
     private readonly cacheService: CacheService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getOrCreateLookup(ip: string): Promise<Lookup> {
@@ -31,7 +33,11 @@ export class LookupService {
     });
     await this.lookupRepository.save(newLookup);
 
-    await this.cacheService.set(ip, JSON.stringify(newLookup), 60);
+    await this.cacheService.set(
+      ip,
+      JSON.stringify(newLookup),
+      this.configService.get<number>('CACHE_TTL') || 60,
+    );
     return newLookup;
   }
 

@@ -6,6 +6,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Lookup } from '../../src/lookup/lookup.entity';
 import { HttpException } from '@nestjs/common';
 import axios from 'axios';
+import { ConfigModule } from '@nestjs/config';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -17,6 +18,7 @@ describe('LookupService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot()],
       providers: [
         LookupService,
         {

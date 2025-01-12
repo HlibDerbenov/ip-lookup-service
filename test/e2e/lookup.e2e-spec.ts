@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../../src/app.module';
@@ -12,6 +12,9 @@ describe('Lookup E2E', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+
+    app.useGlobalPipes(new ValidationPipe());
+
     await app.init();
   });
 
@@ -24,7 +27,7 @@ describe('Lookup E2E', () => {
       .post('/lookup')
       .send({ ip: '8.8.8.8' });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(HttpStatus.OK);
     expect(response.body).toMatchObject({
       ip: '8.8.8.8',
       country: expect.any(String),
@@ -38,7 +41,7 @@ describe('Lookup E2E', () => {
       '/lookup/8.8.8.8',
     );
 
-    expect(deleteResponse.status).toBe(200);
+    expect(deleteResponse.status).toBe(HttpStatus.OK);
     expect(deleteResponse.body).toMatchObject({
       message: 'IP 8.8.8.8 successfully deleted',
     });
@@ -49,10 +52,8 @@ describe('Lookup E2E', () => {
       .post('/lookup')
       .send({ ip: 'invalid-ip' });
 
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty(
-      'message',
-      'Invalid IP address format',
-    );
+    expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+    expect(response.body).toHaveProperty('message');
+    expect(response.body.message).toContain('ip must be an ip address');
   });
 });
