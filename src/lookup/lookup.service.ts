@@ -54,7 +54,7 @@ export class LookupService {
     if (!data || data.success === false) {
       throw new HttpException(
         'Failed to fetch IP info from API',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.SERVICE_UNAVAILABLE,
       );
     }
     return {

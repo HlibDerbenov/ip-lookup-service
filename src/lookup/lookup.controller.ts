@@ -8,6 +8,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  HttpCode,
 } from '@nestjs/common';
 import { LookupService } from './lookup.service';
 import { CreateLookupDto } from './dto/create-lookup.dto';
@@ -19,6 +20,7 @@ export class LookupController {
   constructor(private readonly lookupService: LookupService) {}
 
   @Post()
+  @HttpCode(HttpStatus.OK)
   async getIpInfo(@Body() createLookupDto: CreateLookupDto) {
     const { ip } = createLookupDto;
     this.logger.log(`Received request to lookup IP: ${ip}`);
@@ -30,7 +32,7 @@ export class LookupController {
       this.logger.error(`Error looking up IP ${ip}: ${error.message}`);
       throw new HttpException(
         'Failed to lookup IP address',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.SERVICE_UNAVAILABLE,
       );
     }
   }
@@ -39,37 +41,27 @@ export class LookupController {
   async deleteIpInfo(@Param('ip') ip: string) {
     this.logger.log(`Received request to delete IP: ${ip}`);
 
-    try {
-      const result = await this.lookupService.deleteLookup(ip);
-      if (!result) {
-        throw new HttpException('IP address not found', HttpStatus.NOT_FOUND);
-      }
-      return { message: `IP ${ip} successfully deleted` };
-    } catch (error) {
-      this.logger.error(`Error deleting IP ${ip}: ${error.message}`);
-      throw new HttpException(
-        'Failed to delete IP address',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    const result = await this.lookupService.deleteLookup(ip);
+    if (!result) {
+      this.logger.warn(`IP address ${ip} not found`);
+      throw new HttpException('IP address not found', HttpStatus.NOT_FOUND);
     }
+
+    this.logger.log(`IP address ${ip} successfully deleted`);
+    return { message: `IP ${ip} successfully deleted` };
   }
 
   @Get(':ip')
   async getLookup(@Param('ip') ip: string) {
     this.logger.log(`Received request to fetch IP info: ${ip}`);
 
-    try {
-      const result = await this.lookupService.getLookup(ip);
-      if (!result) {
-        throw new HttpException('IP address not found', HttpStatus.NOT_FOUND);
-      }
-      return result;
-    } catch (error) {
-      this.logger.error(`Error fetching IP info for ${ip}: ${error.message}`);
-      throw new HttpException(
-        'Failed to fetch IP address info',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    const result = await this.lookupService.getLookup(ip);
+
+    if (!result) {
+      this.logger.warn(`IP address ${ip} not found`);
+      throw new HttpException('IP address not found', HttpStatus.NOT_FOUND);
     }
+
+    return result;
   }
 }

@@ -30,13 +30,13 @@ A NestJS-based REST API for looking up IP address information using the [ipwhois
 ## Installation
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/<your-username>/ip-lookup-service.git
+   ```
+   git clone https://github.com/HlibDerbenov/ip-lookup-service.git
    cd ip-lookup-service
    ```
 
 2. Install dependencies:
-   ```bash
+   ```
    npm install
    ```
    There's a possibility to have an issue related to `mongodb` package. Use this command instead:
@@ -50,17 +50,16 @@ A NestJS-based REST API for looking up IP address information using the [ipwhois
    REDIS_HOST=localhost
    REDIS_PORT=6379
    MONGODB_URI=mongodb://localhost:27017/ip-lookup
-   IPWHOIS_API_KEY=your_api_key
    ```
 
 4. Start the services:
    - **With Docker**:
-     ```bash
+     ```
      docker-compose up --build
      ```
    - **Without Docker**:
      Ensure Redis and MongoDB are running locally, then start the application:
-     ```bash
+     ```
      npm run start:dev
      ```
 
@@ -93,7 +92,29 @@ Fetches and caches IP information.
 
 #### Errors
 - **400**: Invalid IP format.
-- **500**: Internal server error.
+- **503**: Service unavailable.
+
+---
+
+### **GET** `/lookup/:ip`
+Retrieves cached or stored IP information.
+
+#### Response
+```json
+{
+  "ip": "8.8.8.8",
+  "country": "USA",
+  "region": "California",
+  "city": "Mountain View",
+  "isp": "Google LLC",
+  "timezone": "America/Los_Angeles",
+  "createdAt": "2025-01-12T12:00:00Z"
+}
+```
+
+#### Errors
+- **404**: IP not found in cache or database.
+- **503**: Service unavailable.
 
 ---
 
