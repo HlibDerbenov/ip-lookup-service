@@ -18,9 +18,6 @@ export class LookupController {
 
   constructor(private readonly lookupService: LookupService) {}
 
-  /**
-   * Получение информации по IP или добавление в кэш/БД
-   */
   @Post()
   async getIpInfo(@Body() createLookupDto: CreateLookupDto) {
     const { ip } = createLookupDto;
@@ -38,9 +35,6 @@ export class LookupController {
     }
   }
 
-  /**
-   * Удаление информации о конкретном IP из кэша/БД
-   */
   @Delete(':ip')
   async deleteIpInfo(@Param('ip') ip: string) {
     this.logger.log(`Received request to delete IP: ${ip}`);
@@ -60,9 +54,6 @@ export class LookupController {
     }
   }
 
-  /**
-   * Получение информации о конкретном IP из кэша/БД
-   */
   @Get(':ip')
   async getLookup(@Param('ip') ip: string) {
     this.logger.log(`Received request to fetch IP info: ${ip}`);

@@ -39,6 +39,10 @@ A NestJS-based REST API for looking up IP address information using the [ipwhois
    ```bash
    npm install
    ```
+   There's a possibility to have an issue related to `mongodb` package. Use this command instead:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
 
 3. Configure environment variables:
    Create a `.env` file in the project root and specify the following variables:

@@ -14,19 +14,16 @@ export class LookupService {
   ) {}
 
   async getOrCreateLookup(ip: string): Promise<Lookup> {
-    // Попробуем получить данные из Redis
     const cached = await this.cacheService.get(ip);
     if (cached) {
       return JSON.parse(cached);
     }
 
-    // Проверяем в базе данных
     const lookup = await this.lookupRepository.findOne({ where: { ip } });
     if (lookup) {
       return lookup;
     }
 
-    // Если данных нет в кэше и базе, запрашиваем API
     const apiResponse = await this.fetchIpInfoFromApi(ip);
     const newLookup = this.lookupRepository.create({
       ip,
@@ -34,15 +31,12 @@ export class LookupService {
     });
     await this.lookupRepository.save(newLookup);
 
-    // Сохраняем данные в Redis
-    await this.cacheService.set(ip, JSON.stringify(newLookup), 60); // TTL 60 секунд
+    await this.cacheService.set(ip, JSON.stringify(newLookup), 60);
     return newLookup;
   }
 
   async deleteLookup(ip: string): Promise<boolean> {
-    // Удаляем из базы данных
     const deleteResult = await this.lookupRepository.delete({ ip });
-    // Удаляем из Redis
     await this.cacheService.delete(ip);
     return deleteResult.affected > 0;
   }
