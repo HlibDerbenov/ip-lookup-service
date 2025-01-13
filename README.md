@@ -49,7 +49,8 @@ A NestJS-based REST API for looking up IP address information using the [ipwhois
    ```env
    REDIS_HOST=localhost
    REDIS_PORT=6379
-   MONGODB_URI=mongodb://localhost:27017/ip-lookup
+   MONGODB_URI=mongodb://localhost:27017
+   MONGODB_DATABASE=ip-lookup
    ```
 
 4. Start the services:
